@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Profile;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,6 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        $countUser = 100;
+
+
+        \App\Models\Profile::factory($countUser)->create();
+        \App\Models\User::factory($countUser)->create();
+        $this->call(UserSeeder::class);
     }
 }

@@ -14,12 +14,22 @@ class User extends Authenticatable
     use HasApiTokens, HasRoles, HasFactory, Notifiable;
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
+
+    protected $guard_name = 'api';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name',
+        'profile_id',
         'email',
         'password',
     ];
@@ -31,7 +41,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
