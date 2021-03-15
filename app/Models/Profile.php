@@ -9,6 +9,11 @@ class Profile extends Model
 {
     use HasFactory;
 
+    public function users()
+    {
+        return $this->hasOne(User::class, 'profile_id', 'id');
+    }
+
     public $timestamps = false;
 
     /**
