@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -23,12 +24,17 @@ class UserFactory extends Factory
     public function definition()
     {
         $profileIds = \App\Models\Profile::pluck('id')->toArray();
+        $profileId = $this->faker->unique()->randomElement($profileIds);
+        $profile = \App\Models\Profile::find($profileId);
+
+        $date = new Carbon($profile->birthday);
+        $login = Str::slug(Str::lower($profile->lastname . "." . $profile->firstname . $date->format('Y')));
 
         return [
-            'profile_id' => $this->faker->unique()->randomElement($profileIds),
-            'login' => Str::random(16),
-            'email' => $this->faker->unique()->safeEmail,
-            'password' => Str::random(10), // password
+            'profile_id' => $profileId,
+            'login' => $login,
+            'email' => $login . "@example.exp",
+            'password' => Str::random(10),
         ];
     }
 

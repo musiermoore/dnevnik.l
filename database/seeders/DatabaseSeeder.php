@@ -19,6 +19,6 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\Profile::factory($countUser)->create();
         \App\Models\User::factory($countUser)->create();
-        $this->call(UserSeeder::class);
+        $this->call(RoleSeeder::class);
     }
 }
