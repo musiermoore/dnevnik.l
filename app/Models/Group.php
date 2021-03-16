@@ -18,4 +18,24 @@ class Group extends Model
         'graduation_date',
         'duration_study'
     ];
+
+    public function students()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function curator()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get group by name
+     */
+    public static function getGroupByName($groupName)
+    {
+        $group = Group::where('name', 'like', '%' . $groupName . '%')->get();
+
+        return $group;
+    }
 }

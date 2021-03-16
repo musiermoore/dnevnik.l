@@ -26,7 +26,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['middleware' => ['role:admin']], function() {
         Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'getUsersByRole']);
     });
+    Route::group(['middleware' => ['role:admin|educational_part|teacher']], function() {
+        Route::get('/group', [\App\Http\Controllers\Api\GroupController::class, 'getStudentsByGroup']);
+    });
 });
+
 
 
 

@@ -16,12 +16,13 @@ class CreateGroupsTable extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('name', 10)->unique();
-            $table->bigInteger('curator');
+            $table->bigInteger('curator_id')->unsigned();
 
             $table->date('enrollment_date');
             $table->date('graduation_date');
 
             $table->integer('duration_study');
+            $table->foreign('curator_id')->references('id')->on('users');
         });
     }
 
