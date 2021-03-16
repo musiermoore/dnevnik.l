@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Profile::factory($usersCount)->create();
         \App\Models\User::factory($usersCount)->create();
         $this->call(RoleSeeder::class);
+        $this->call(ModelHasRolesSeeder::class);
 
         $this->call(GroupSeeder::class);
         $this->call(StudentsHasGroupSeeder::class);

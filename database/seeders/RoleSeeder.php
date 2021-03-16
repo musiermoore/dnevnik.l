@@ -25,22 +25,5 @@ class RoleSeeder extends Seeder
             Role::create(['name' => 'student', 'guard_name' => 'api']);
             Role::create(['name' => 'educational_part', 'guard_name' => 'api']);
         }
-
-        $users = User::all();
-
-        $roles = DB::table('spatie_roles')->get();
-
-        foreach ($users as $user)
-        {
-            if ($user->id == 1)
-                $user->assignRole('admin');
-            else
-            {
-                $random = rand(1, $countRows - 1);
-
-                $user->assignRole($roles[$random]->id);
-            }
-
-        }
     }
 }

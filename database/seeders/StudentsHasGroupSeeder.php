@@ -24,7 +24,7 @@ class StudentsHasGroupSeeder extends Seeder
                 'group_id'  => $groups[rand(0, count($groups) - 1)],
             ];
 
-            DB::table('students_has_group')->insert($data);
+            DB::table('group_user')->insert($data);
         }
     }
 }
