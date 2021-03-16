@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Profile;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,11 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $countUser = 100;
+        $usersCount = 100;
 
-
-        \App\Models\Profile::factory($countUser)->create();
-        \App\Models\User::factory($countUser)->create();
+        \App\Models\Profile::factory($usersCount)->create();
+        \App\Models\User::factory($usersCount)->create();
         $this->call(RoleSeeder::class);
+
+        $this->call(GroupSeeder::class);
+        $this->call(StudentsHasGroupSeeder::class);
     }
 }
