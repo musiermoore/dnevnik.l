@@ -15,6 +15,7 @@ class GroupResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'group_id'      => $this->id,
             'group'         => $this->name,
             'curator'       => UserResource::make($this->curator),
             'students'      => UserResource::collection($this->students),
