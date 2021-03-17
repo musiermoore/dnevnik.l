@@ -16,6 +16,8 @@ class CreateProfilesTable extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
 
+            $table->unsignedBigInteger('user_id')->unique();
+
             $table->string('lastname', 64);
             $table->string('firstname', 64);
             $table->string('patronymic', 64);
@@ -23,9 +25,11 @@ class CreateProfilesTable extends Migration
             $table->date('birthday');
             $table->integer('age')->unsigned();
 
-            $table->char('gender', 1);
+            $table->boolean('gender');
 
             $table->string('phone', 32);
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

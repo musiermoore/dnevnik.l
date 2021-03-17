@@ -30,4 +30,21 @@ class Profile extends Model
         'gender',
         'phone',
     ];
+
+    /**
+     * Get full gender name
+     *
+     * @param $gender
+     * @return string
+     */
+    public function getGenderAttribute($gender)
+    {
+        if ($gender == 0) {
+            $newGender = "Мужчина";
+        } else {
+            $newGender = "Женщина";
+        }
+
+        return $newGender;
+    }
 }
