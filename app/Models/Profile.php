@@ -11,7 +11,7 @@ class Profile extends Model
 
     public function users()
     {
-        return $this->hasOne(User::class, 'profile_id', 'id');
+        return $this->belongsTo(User::class, 'profile_id', 'id');
     }
 
     public $timestamps = false;

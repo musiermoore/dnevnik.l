@@ -52,13 +52,13 @@ class User extends Authenticatable
 
     public function profile()
     {
-        return $this->belongsTo(Profile::class);
+        return $this->hasOne(Profile::class);
     }
 
-    public static function getUsersByRole($role)
+    public static function getUsersByRole($roles)
     {
-        $users = User::role($role)->get();
+        $users = User::role($roles)->get();
 
-        return UserResource::collection($users);
+        return $users;
     }
 }
