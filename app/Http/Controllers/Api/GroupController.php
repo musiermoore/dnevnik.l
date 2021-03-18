@@ -13,9 +13,18 @@ class GroupController extends Controller
     public function getStudentsByGroup(Request $request)
     {
         $groups = Group::getGroupByName($request->group);
-        if (!empty($request->group))
-            return response()->json(GroupResource::collection($groups));
-        else
-            return response()->json([], 400);
+
+        if (empty($request->group)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 400,
+                    'message'   => "No results",
+                ],
+            ], 400);
+        }
+
+        return response()->json([
+            'data'  => GroupResource::collection($groups),
+        ], 200);
     }
 }

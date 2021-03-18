@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\RoleRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,14 +16,22 @@ class UserController extends Controller
 
         return UserResource::make($user);
     }
+
     /**
      * Get users by role
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function getUsersByRole(Request $request)
+    public function getUsersByRole(RoleRequest $request)
     {
-        $users = User::getUsersByRole($request->query('role'));
+        $roles = $request->roles;
 
-        return $users;
+        $users = User::getUsersByRole($roles);
+
+        return response()->json([
+            'data' => UserResource::collection($users)->sortBy('roles')->values(),
+        ], 200);
     }
 
 }
