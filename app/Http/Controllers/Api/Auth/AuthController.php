@@ -20,6 +20,7 @@ class AuthController extends Controller
         $data['age'] = Carbon::parse($data['birthday'])->diffInYears();
 
         $user = User::create($data);
+        $user->assignRole($data['roles']);
         $user->profile()->create($data);
 
         return response()->json()->setStatusCode(204);
