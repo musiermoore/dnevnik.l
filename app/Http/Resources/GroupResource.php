@@ -18,7 +18,6 @@ class GroupResource extends JsonResource
             'group_id'      => $this->id,
             'group'         => $this->name,
             'curator'       => UserResource::make($this->curator),
-            'students'      => UserResource::collection($this->students),
         ];
     }
 }

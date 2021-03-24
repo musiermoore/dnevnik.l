@@ -34,7 +34,7 @@ class Group extends Model
      */
     public static function getGroupByName($groupName)
     {
-        $group = Group::where('name', 'like', '%' . $groupName . '%')->get();
+        $group = Group::where('name', 'like', '%' . $groupName . '%')->first();
 
         return $group;
     }
