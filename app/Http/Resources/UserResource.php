@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'login'     => $this->login,
             'email'     => $this->email,
             'roles'     => $this->getRoleNames(),
+            'group'     => GroupResource::collection($this->group),
         ];
     }
 }
