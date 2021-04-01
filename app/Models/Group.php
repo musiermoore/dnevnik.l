@@ -30,12 +30,18 @@ class Group extends Model
     }
 
     /**
-     * Get group by name
+     * Get main group
      */
-    public static function getGroupByName($groupName)
+    public static function getMainGroup($group)
     {
-        $group = Group::where('name', 'like', '%' . $groupName . '%')->first();
+        return $group[0];
+    }
 
-        return $group;
+    /**
+     * Get group by id
+     */
+    public static function getGroupById($groupId)
+    {
+        return Group::where('id', $groupId)->first();
     }
 }

@@ -12,7 +12,7 @@ class GroupController extends Controller
 {
     public function getStudentsByGroup(Request $request)
     {
-        $groups = Group::getGroupByName($request->group);
+        $groups = Group::getGroupById($request->group);
 
         if (empty($request->group)) {
             return response()->json([

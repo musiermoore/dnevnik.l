@@ -23,7 +23,7 @@ class TimetableResource extends JsonResource
                 'start'  => $this->lessonNumber->start_time,
                 'end'    => $this->lessonNumber->end_time,
             ],
-            'group'         => $this->group->name,
+            'group'         => $this->group,
             'teacher'       => UserResource::make($this->teacher),
             'weekday'       => $this->weekday->day,
             'date'          => $this->date,

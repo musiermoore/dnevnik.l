@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TimetableResource;
+use App\Models\Group;
 use App\Models\Timetable;
 use Illuminate\Http\Request;
 
@@ -31,7 +32,8 @@ class TimetableController extends Controller
         if ($user->hasRole(['teacher', 'educational_part'])) {
             $timetable = Timetable::getWeekTimetableForTeacher($user->id);
         } else if ($user->hasRole('student')) {
-            $timetable = Timetable::getWeekTimetableForStudent($user->group[0]->id);
+            $group = Group::getMainGroup($user->group);
+            $timetable = Timetable::getWeekTimetableForStudent($group->id);
         }
 
         $result = Timetable::getWeekTimetableBetweenTwoDates($timetable, $weekStartDate, $weekEndDate);
