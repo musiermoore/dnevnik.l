@@ -16,10 +16,10 @@ class CreateTimetablesTable extends Migration
         Schema::create('timetables', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('subject_id');
-            $table->unsignedBigInteger('classroom_id');
+            $table->unsignedBigInteger('classroom_id')->nullable();
             $table->unsignedBigInteger('lesson_numbers_id');
             $table->unsignedBigInteger('group_id');
-            $table->unsignedBigInteger('teacher_id');
+            $table->unsignedBigInteger('teacher_id')->nullable();
             $table->unsignedBigInteger('weekday_id');
             $table->date('date');
 

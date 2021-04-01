@@ -43,16 +43,12 @@ class Timetable extends Model
 
     public static function getWeekTimetableForTeacher($teacherId)
     {
-        $timetable = Timetable::where('teacher_id', $teacherId);
-
-        return $timetable;
+        return Timetable::where('teacher_id', $teacherId);
     }
 
     public static function getWeekTimetableForStudent($groupId)
     {
-        $timetable = Timetable::where('group_id', $groupId);
-
-        return $timetable;
+        return Timetable::where('group_id', $groupId);
     }
 
     public static function getWeekTimetableBetweenTwoDates($timetable, $weekStartDate, $weekEndDate)
