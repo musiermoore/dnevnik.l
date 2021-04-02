@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\TimetableRequest;
 use App\Http\Resources\TimetableResource;
 use App\Models\Group;
 use App\Models\Timetable;
@@ -44,24 +45,82 @@ class TimetableController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param TimetableRequest $request
+     * @return mixed
      */
-    public function store(Request $request)
+    public function store(TimetableRequest $request)
     {
-        //
+        $teacher = \App\Models\User::find($request->teacher);
+
+        if (! $teacher->hasRole('teacher')) {
+            return response()->json([
+                'data' => [
+                    'error' => [
+                        'code'      => 400,
+                        'message'   => 'The subject should be taught by the teacher',
+                    ],
+                ],
+            ])->setStatusCode(400);
+        }
+
+        $lessonData = $request->all();
+        $lessonData['date'] = \Carbon\Carbon::parse($lessonData['date'])->format('Y-m-d');
+
+        $availabilityTeacher = Timetable::checkAvailabilityTeacher($lessonData);
+        if (! $availabilityTeacher->isEmpty()) {
+            return response()->json([
+                'data' => [
+                    'error' => [
+                        'code'      => 422,
+                        'message'   => 'The teacher cannot be in two lessons at once',
+                    ],
+                ],
+            ])->setStatusCode(422);
+        }
+
+        $availabilityGroup = Timetable::checkAvailabilityGroup($lessonData);
+        if (! $availabilityGroup->isEmpty()) {
+            return response()->json([
+                'data' => [
+                    'error' => [
+                        'code'      => 422,
+                        'message'   => 'The group cannot be in two lessons at once',
+                    ],
+                ],
+            ])->setStatusCode(422);
+        }
+
+        $availabilityClassroom = Timetable::checkAvailabilityClassroom($lessonData);
+        if (! $availabilityClassroom->isEmpty()) {
+            return response()->json([
+                'data' => [
+                    'error' => [
+                        'code'      => 422,
+                        'message'   => 'The classroom is already taken',
+                    ],
+                ],
+            ])->setStatusCode(422);
+        }
+
+        $timetable = Timetable::create([
+            'subject_id'        => $lessonData['subject'],
+            'classroom_id'      => $lessonData['classroom'],
+            'lesson_numbers_id' => $lessonData['lesson_number'],
+            'group_id'          => $lessonData['group'],
+            'teacher_id'        => $lessonData['teacher'],
+            'weekday_id'        => $lessonData['weekday'],
+            'date'              => $lessonData['date'],
+        ]);
+
+        return response()->json([
+            'date' => [
+                'code'      => 201,
+                'message'   => "The lesson is scheduled",
+                'lesson'    => TimetableResource::make($timetable),
+            ],
+        ])->setStatusCode(201);
     }
 
     /**
@@ -70,18 +129,7 @@ class TimetableController extends Controller
      * @param  \App\Models\TimeTable  $timeTable
      * @return \Illuminate\Http\Response
      */
-    public function show(TimeTable $timeTable)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\TimeTable  $timeTable
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(TimeTable $timeTable)
+    public function show(Timetable $timeTable)
     {
         //
     }
@@ -93,7 +141,7 @@ class TimetableController extends Controller
      * @param  \App\Models\TimeTable  $timeTable
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TimeTable $timeTable)
+    public function update(TimetableRequest $request, TimeTable $timeTable)
     {
         //
     }

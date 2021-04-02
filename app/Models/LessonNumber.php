@@ -10,4 +10,14 @@ class LessonNumber extends Model
     use HasFactory;
 
     public $timestamps = false;
+
+    public function getStartTimeAttribute($time)
+    {
+        return \Carbon\Carbon::parse($time)->format('H:i');
+    }
+
+    public function getEndTimeAttribute($time)
+    {
+        return \Carbon\Carbon::parse($time)->format('H:i');
+    }
 }
