@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\LessonNumber;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,9 @@ class LessonNumberController extends Controller
      */
     public function index()
     {
-        //
+        $lessonNumbers = LessonNumber::getAllLessonNumbersId();
+
+        return response()->json($lessonNumbers);
     }
 
     /**
