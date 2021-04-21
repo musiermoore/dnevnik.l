@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\TimetableRequest;
+use App\Http\Resources\TimetableCollection;
 use App\Http\Resources\TimetableResource;
 use App\Models\Group;
 use App\Models\Timetable;
@@ -40,7 +41,9 @@ class TimetableController extends Controller
         $result = Timetable::getWeekTimetableBetweenTwoDates($timetable, $weekStartDate, $weekEndDate);
 
         return response()->json([
-            'data' => TimetableResource::collection($result),
+            'data' => [
+                'lessons' => TimetableCollection::collection($result),
+            ],
         ]);
     }
 

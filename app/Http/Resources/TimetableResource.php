@@ -25,7 +25,10 @@ class TimetableResource extends JsonResource
             ],
             'group'         => $this->group,
             'teacher'       => UserResource::make($this->teacher),
-            'weekday'       => $this->weekday->day,
+            'weekday'       => [
+                'weekday_id'    => $this->weekday->id,
+                'weekday_name'  => $this->weekday->day,
+            ],
             'date'          => $this->date,
         ];
     }
