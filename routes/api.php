@@ -23,6 +23,9 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('/timetable', [\App\Http\Controllers\Api\TimetableController::class, 'getTimetableForWeek']);
 
+    // Rate
+    Route::get('/rates', [\App\Http\Controllers\Api\RateController::class, 'getAllRatesForStudent']);
+
     Route::group(['middleware' => ['role:admin|educational_part']], function() {
         Route::post('/register', [\App\Http\Controllers\Api\Auth\AuthController::class, 'register']);
         Route::apiResource('timetable', \App\Http\Controllers\Api\TimetableController::class)

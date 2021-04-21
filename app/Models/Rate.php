@@ -8,4 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Rate extends Model
 {
     use HasFactory;
+
+    public function student()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function lesson()
+    {
+        return $this->hasOne(Timetable::class, 'id','lesson_id');
+    }
+
+    protected $fillable = [
+        'id',
+        'student_id',
+        'lesson_id',
+        'rate',
+    ];
 }
