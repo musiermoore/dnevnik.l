@@ -53,7 +53,7 @@ class Timetable extends Model
 
     public function getDateAttribute($date)
     {
-        return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format('d.m.Y');
+        return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format('d F Y г.');
     }
 
     /**
@@ -85,9 +85,13 @@ class Timetable extends Model
         return $timetable->whereBetween('date', [
             $weekStartDate,
             $weekEndDate
-        ])->orderBy('date')
+        ])
+            ->orderBy('date')
             ->orderBy('lesson_numbers_id')
-            ->get();
+            ->get()
+            ->groupBy(function($events) {
+                return $events->date; // А это то-же поле по нему мы и будем группировать
+            });
     }
 
     public static function checkAvailabilityTeacher($lessonData)
