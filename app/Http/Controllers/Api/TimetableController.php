@@ -9,6 +9,7 @@ use App\Http\Resources\TimetableResource;
 use App\Models\Group;
 use App\Models\Timetable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TimetableController extends Controller
 {
@@ -118,7 +119,7 @@ class TimetableController extends Controller
         ]);
 
         return response()->json([
-            'date' => [
+            'data' => [
                 'code'      => 201,
                 'message'   => "The lesson is scheduled",
                 'lesson'    => TimetableResource::make($timetable),
@@ -130,11 +131,42 @@ class TimetableController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\TimeTable  $timeTable
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|object
      */
-    public function show(Timetable $timeTable)
+    public function show($id)
     {
-        //
+        $user = Auth::user();
+
+        $lesson = Timetable::query()->find($id);
+
+        if (! $user->group->isEmpty()) {
+            $group = \App\Models\Group::getMainGroup($user->group);
+
+            if ($user->hasRole('student') AND $group->id != $lesson->group_id) {
+                return response()->json([
+                    'error' => [
+                        'code'      => 403,
+                        'message'   => "Group is diff"
+                    ],
+                ])->setStatusCode(403);
+            }
+        }
+
+        if (empty($lesson)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Lesson not found"
+                ],
+            ])->setStatusCode(404);
+        }
+
+        return response()->json([
+            'data' => [
+                'code'      => 200,
+                'lesson'    => TimetableResource::make($lesson),
+            ],
+        ])->setStatusCode(200);
     }
 
     /**

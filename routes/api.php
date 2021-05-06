@@ -22,6 +22,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/logout', [\App\Http\Controllers\Api\Auth\AuthController::class, 'logout']);
 
     Route::get('/timetable', [\App\Http\Controllers\Api\TimetableController::class, 'getTimetableForWeek']);
+    Route::apiResource('timetable', \App\Http\Controllers\Api\TimetableController::class)
+        ->only(['show']);
 
     Route::get('/groups', [\App\Http\Controllers\Api\GroupController::class, 'getGroups']);
 
@@ -31,7 +33,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['middleware' => ['role:admin|educational_part']], function() {
         Route::post('/register', [\App\Http\Controllers\Api\Auth\AuthController::class, 'register']);
         Route::apiResource('timetable', \App\Http\Controllers\Api\TimetableController::class)
-            ->only('store');
+            ->only(['store']);
     });
 
     Route::group(['middleware' => ['role:admin|educational_part|teacher']], function() {
