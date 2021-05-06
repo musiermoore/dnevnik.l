@@ -4,18 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\RateRequest;
+use App\Http\Resources\RateCollection;
 use App\Http\Resources\RateResource;
 use App\Http\Resources\UserResource;
+use App\Models\Group;
 use App\Models\Rate;
+use App\Models\Subject;
+use App\Models\Timetable;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RateController extends Controller
 {
     public function setRateStudent(RateRequest $request)
     {
-        $studentId = $request->query('student_id');
-
         if (empty($request->query('student_id'))) {
             return response()->json([
                 'error' => [
@@ -26,26 +29,25 @@ class RateController extends Controller
             ])->setStatusCode(400);
         }
 
-        $student = User::find($studentId);
+        $student = User::find($request->query('student_id'));
 
-        if (empty($student)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Not found",
-                    'errors'    => "Student not found",
-                ],
-            ])->setStatusCode(404);
-        }
+        $group = Timetable::where('id', $request->lesson_id)->pluck('group_id');
 
-        if (! $student->hasRole('student')) {
+        if ($student->group[0]->id != $group[0]) {
             return response()->json([
                 'error' => [
                     'code'      => 400,
                     'message'   => "Bad request",
-                    'errors'    => "User is not a student",
+                    'errors'    => "Groups differ",
                 ],
             ])->setStatusCode(400);
+        }
+
+        $error = $this->checkStudent($student);
+        if (! empty($error)) {
+            return response()
+                ->json($error["message"])
+                ->setStatusCode($error["code"]);
         }
 
         $data = [
@@ -73,13 +75,15 @@ class RateController extends Controller
     }
 
     /*
-     * Get all rates for a student
+     * Get all student rates
      */
-    public function getAllRatesForStudent(Request $request)
+    public function getAllStudentRates(Request $request)
     {
-        if ($request->user()->hasRole('student')) {
+        $user = Auth::user();
+
+        if ($user->hasRole('student')) {
             $student = $request->user();
-        } elseif ($request->user()->hasAnyRole(['admin', 'teacher', 'educational_part'])) {
+        } elseif ($user->hasAnyRole(['admin', 'teacher', 'educational_part'])) {
             if (empty($request->query('student_id'))) {
                 return response()->json([
                     'error' => [
@@ -91,37 +95,66 @@ class RateController extends Controller
             }
 
             $student = User::find($request->query('student_id'));
+            $error = $this->checkStudent($student);
 
-            if (empty($student)) {
-                return response()->json([
-                    'error' => [
-                        'code'      => 404,
-                        'message'   => "Not found",
-                        'errors'    => "Student not found",
-                    ],
-                ])->setStatusCode(404);
-            }
-
-            if (! $student->hasRole('student')) {
-                return response()->json([
-                    'error' => [
-                        'code'      => 400,
-                        'message'   => "Bad request",
-                        'errors'    => "User is not a student",
-                    ],
-                ])->setStatusCode(400);
+            if (! empty($error)) {
+                return response()
+                    ->json($error["message"])
+                    ->setStatusCode($error["code"]);
             }
         }
 
-        $rates = Rate::where('student_id', $student->id)->get();
+        $lesson = Timetable::where('group_id', Group::getMainGroup($student->group)->id)
+            ->orderBy('subject_id')
+            ->get()
+            ->groupBy(function($events) {
+                return Subject::find($events->subject_id)->subject; // А это то-же поле по нему мы и будем группировать
+            });
+
+
+        $rates = Rate::where('student_id', $student->id)
+            ->with('lesson')
+            ->get()
+            ->groupBy(function ($rate) {
+                return $rate->lesson->subject->id;
+            });
+
 
         return response()->json([
             'data' => [
                 'code'      => 200,
                 'student'   => UserResource::make($student),
-                'rates'     => RateResource::collection($rates),
+                'rates'     => RateCollection::make($rates),
             ],
         ])->setStatusCode(200);
+    }
+
+    private function checkStudent($student)
+    {
+        $error = null;
+
+        if (empty($student)) {
+            $error["code"] = 404;
+            $error["message"] = [
+                'error' => [
+                    'code'      => $error["code"],
+                    'message'   => "Not found",
+                    'errors'    => "Student not found",
+                ],
+            ];
+        }
+        elseif (! $student->hasRole('student')) {
+            $error["code"] = 400;
+            $error["message"] = [
+                'error' => [
+                    'code'      => $error["code"],
+                    'message'   => "Bad request",
+                    'errors'    => "User is not a student",
+                ],
+            ];
+        }
+
+        return $error;
     }
 
     /*

@@ -19,6 +19,11 @@ class Rate extends Model
         return $this->hasOne(Timetable::class, 'id','lesson_id');
     }
 
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
     protected $fillable = [
         'id',
         'student_id',
