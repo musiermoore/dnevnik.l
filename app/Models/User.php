@@ -60,10 +60,25 @@ class User extends Authenticatable
         return $this->belongsToMany(Group::class, 'group_user', 'user_id');
     }
 
-    public static function getUsersByRole($roles)
+    public static function getUsersByRole($roles, $groupId = null)
     {
-        $users = User::role($roles)->get();
+        $users = User::role($roles);
 
-        return $users;
+        if (! empty($groupId) && $roles == 3) {
+            $users = self::getUsersByGroup($users, $groupId);
+        }
+
+        return $users->get();
+    }
+
+    private static function getUsersByGroup($users, $groupId)
+    {
+        $usersId = \Illuminate\Support\Facades\DB::table('group_user')
+            ->whereIn('user_id', $users->pluck('id'))
+            ->where('group_id', $groupId)
+            ->pluck('user_id')
+            ->toArray();
+
+        return $users->whereIn('id', $usersId);
     }
 }

@@ -26,11 +26,12 @@ class UserController extends Controller
     public function getUsersByRole(RoleRequest $request)
     {
         $roles = $request->roles;
+        $groupId = $request->group;
 
-        $users = User::getUsersByRole($roles);
+        $users = User::getUsersByRole($roles, $groupId);
 
         return response()->json([
-            'data' => UserResource::collection($users)->sortBy('roles')->values(),
+            'data' => UserResource::collection($users)->sortBy('roles')->sortBy('group')->values(),
         ], 200);
     }
 
