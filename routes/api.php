@@ -23,8 +23,10 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('/timetable', [\App\Http\Controllers\Api\TimetableController::class, 'getTimetableForWeek']);
 
+    Route::get('/groups', [\App\Http\Controllers\Api\GroupController::class, 'getGroups']);
+
     // Rate
-    Route::get('/rates', [\App\Http\Controllers\Api\RateController::class, 'getAllRatesForStudent']);
+    Route::get('/rates', [\App\Http\Controllers\Api\RateController::class, 'getAllStudentRates']);
 
     Route::group(['middleware' => ['role:admin|educational_part']], function() {
         Route::post('/register', [\App\Http\Controllers\Api\Auth\AuthController::class, 'register']);
