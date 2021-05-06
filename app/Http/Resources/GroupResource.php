@@ -16,7 +16,7 @@ class GroupResource extends JsonResource
     {
         return [
             'group_id'      => $this->id,
-            'group'         => $this->name,
+            'group_name'    => $this->name,
             'curator'       => UserResource::make($this->curator),
         ];
     }
