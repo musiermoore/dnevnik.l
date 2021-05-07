@@ -53,7 +53,30 @@ class Timetable extends Model
 
     public function getDateAttribute($date)
     {
-        return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format('d F Y г.');
+        $date = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
+
+        $year = $date->year;
+        $month = $date->month;
+        $day = $date->day;
+
+        $monthRus = [
+            'января', // 0
+            'февраля',
+            'марта',
+            'апреля',
+            'мая',
+            'июня',
+            'июля',
+            'августа',
+            'сентября',
+            'октября',
+            'ноября',
+            'декабря' // 11
+        ];
+
+        $date =  $day . " " . $monthRus[$month - 1] . " " . $year . " г.";
+
+        return $date;
     }
 
     /**
