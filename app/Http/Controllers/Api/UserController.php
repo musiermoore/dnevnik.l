@@ -17,6 +17,25 @@ class UserController extends Controller
         return UserResource::make($user);
     }
 
+    public function getUserById($id)
+    {
+        $user = User::find($id);
+
+        if (empty($user)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Not found",
+                    'errors'    => "Student not found",
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'data' => UserResource::make($user),
+        ], 200);
+    }
+
     /**
      * Get users by role
      *
