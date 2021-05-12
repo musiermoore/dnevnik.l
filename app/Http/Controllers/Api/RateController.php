@@ -19,7 +19,7 @@ class RateController extends Controller
 {
     public function setRateStudent(RateRequest $request)
     {
-        if (empty($request->query('student_id'))) {
+        if (empty($request->student_id)) {
             return response()->json([
                 'error' => [
                     'code'      => 400,
@@ -29,7 +29,7 @@ class RateController extends Controller
             ])->setStatusCode(400);
         }
 
-        $student = User::find($request->query('student_id'));
+        $student = User::find($request->student_id);
 
         $group = Timetable::where('id', $request->lesson_id)->pluck('group_id');
 
