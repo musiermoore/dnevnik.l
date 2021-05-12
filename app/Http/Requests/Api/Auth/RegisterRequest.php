@@ -31,12 +31,14 @@ class RegisterRequest extends FormRequest
             'firstname'     => 'required|string|max:64',
             'patronymic'    => 'required|string|max:64',
             'birthday'      => 'required|date',
-            'gender'        => 'required|size:1',
-            'phone'         => 'required|string|max:12',
+            'gender'        => 'required|boolean',
+            'phone'         => 'required|regex:/(8)[0-9]{10}/|size:11   ',
             // user
             'login'         => 'required|string|max:32|unique:users',
             'email'         => 'required|string|max:32|unique:users|email',
             'password'      => 'required|string|max:32|confirmed',
+            // role
+            'roles'         => 'required|exists:spatie_roles,id',
         ];
     }
 }
