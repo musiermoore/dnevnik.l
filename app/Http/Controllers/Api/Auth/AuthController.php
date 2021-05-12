@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -23,7 +24,18 @@ class AuthController extends Controller
         $user->assignRole($data['roles']);
         $user->profile()->create($data);
 
-        return response()->json()->setStatusCode(204);
+        if ($user->hasRole('student')) {
+            $group = \App\Models\Group::find($data['group']);
+
+            $user->group()->attach($group);
+        }
+
+        return response()->json([
+            'data' => [
+                'code'  => 200,
+                'user'  => UserResource::make($user),
+            ],
+        ])->setStatusCode(200);
     }
 
     public function login(LoginRequest $request)
