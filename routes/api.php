@@ -19,6 +19,7 @@ Route::post('/login', [\App\Http\Controllers\Api\Auth\AuthController::class, 'lo
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/user', [\App\Http\Controllers\Api\UserController::class, 'getUser']);
+    Route::get('/profile/{id}', [\App\Http\Controllers\Api\UserController::class, 'getUserById']);
     Route::post('/logout', [\App\Http\Controllers\Api\Auth\AuthController::class, 'logout']);
 
     Route::get('/timetable', [\App\Http\Controllers\Api\TimetableController::class, 'getTimetableForWeek']);
@@ -42,6 +43,10 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'getUsersByRole']);
         Route::get('/group', [\App\Http\Controllers\Api\GroupController::class, 'getStudentsByGroup']);
+
+        Route::group(['prefix' => 'admin'], function () {
+            Route::apiResource('/users', \App\Http\Controllers\Api\UserController::class);
+        });
     });
 });
 
