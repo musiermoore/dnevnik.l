@@ -19,8 +19,10 @@ class CreateRatesTable extends Migration
             $table->unsignedBigInteger('lesson_id');
             $table->integer('rate');
 
-            $table->foreign('student_id')->references('id')->on('users');
-            $table->foreign('lesson_id')->references('id')->on('timetables');
+            $table->foreign('student_id')->references('id')->on('users')
+                ->onDelete('cascade');
+            $table->foreign('lesson_id')->references('id')->on('timetables')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });

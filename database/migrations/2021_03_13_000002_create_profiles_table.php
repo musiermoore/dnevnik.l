@@ -29,7 +29,10 @@ class CreateProfilesTable extends Migration
 
             $table->string('phone', 32);
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 

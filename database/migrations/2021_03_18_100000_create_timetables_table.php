@@ -23,12 +23,16 @@ class CreateTimetablesTable extends Migration
             $table->unsignedBigInteger('weekday_id');
             $table->date('date');
 
-            $table->foreign('subject_id')->references('id')->on('subjects');
+            $table->foreign('subject_id')->references('id')->on('subjects')
+                ->onDelete('cascade');
             $table->foreign('classroom_id')->references('id')->on('classrooms');
-            $table->foreign('lesson_numbers_id')->references('id')->on('lesson_numbers');
-            $table->foreign('group_id')->references('id')->on('groups');
+            $table->foreign('lesson_numbers_id')->references('id')->on('lesson_numbers')
+                ->onDelete('cascade');
+            $table->foreign('group_id')->references('id')->on('groups')
+                ->onDelete('cascade');
             $table->foreign('teacher_id')->references('id')->on('users');
-            $table->foreign('weekday_id')->references('id')->on('weekdays');
+            $table->foreign('weekday_id')->references('id')->on('weekdays')
+                ->onDelete('cascade');
         });
     }
 
