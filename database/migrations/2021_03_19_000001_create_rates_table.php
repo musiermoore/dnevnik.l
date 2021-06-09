@@ -17,7 +17,7 @@ class CreateRatesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('lesson_id');
-            $table->integer('rate');
+            $table->integer('rate')->nullable();
 
             $table->foreign('student_id')->references('id')->on('users')
                 ->onDelete('cascade');
