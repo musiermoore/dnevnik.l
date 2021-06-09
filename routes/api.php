@@ -40,6 +40,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['middleware' => ['role:admin|educational_part|teacher']], function() {
         // Rate
         Route::post('/rates', [\App\Http\Controllers\Api\RateController::class, 'setRateStudent']);
+        Route::post('/attendance', [\App\Http\Controllers\Api\RateController::class, 'setAttendanceStudent']);
+        Route::get('/lesson/{id}/rates', [\App\Http\Controllers\Api\RateController::class, 'getRatesForGroupByLesson']);
 
         Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'getUsersByRole']);
         Route::get('/group', [\App\Http\Controllers\Api\GroupController::class, 'getStudentsByGroup']);

@@ -15,8 +15,9 @@ class RateResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'lesson'    => TimetableResource::make($this->lesson),
-            'rate'      => $this->rate,
+            'lesson'        => TimetableResource::make($this->lesson),
+            'rate'          => $this->rate,
+            'attendance'    => $this->attendance,
         ];
     }
 }

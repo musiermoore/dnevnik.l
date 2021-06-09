@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\RateAttendanceRequest;
 use App\Http\Requests\Api\RateRequest;
 use App\Http\Resources\RateCollection;
 use App\Http\Resources\RateResource;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\Group;
 use App\Models\Rate;
@@ -17,6 +19,65 @@ use Illuminate\Support\Facades\Auth;
 
 class RateController extends Controller
 {
+    public function setAttendanceStudent(RateAttendanceRequest $request)
+    {
+        if (empty($request->student_id)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 400,
+                    'message'   => "Bad request",
+                    'errors'    => "Student is not selected",
+                ],
+            ])->setStatusCode(400);
+        }
+
+        $student = User::find($request->student_id);
+
+        $group = Timetable::where('id', $request->lesson_id)->pluck('group_id');
+
+        if ($student->group[0]->id != $group[0]) {
+            return response()->json([
+                'error' => [
+                    'code'      => 400,
+                    'message'   => "Bad request",
+                    'errors'    => "Groups differ",
+                ],
+            ])->setStatusCode(400);
+        }
+
+        $error = $this->checkStudent($student);
+        if (! empty($error)) {
+            return response()
+                ->json($error["message"])
+                ->setStatusCode($error["code"]);
+        }
+
+        $data = [
+            'student_id'    => $request->student_id,
+            'lesson_id'     => $request->lesson_id,
+            'attendance'    => $request->attendance,
+        ];
+
+        $attendance = Rate::where('student_id', $request->student_id)->where('lesson_id', $request->lesson_id)->first();
+
+
+        if (! empty($attendance)) {
+            $attendance->attendance = $data['attendance'];
+            $attendance->save();
+        } else {
+            $attendance = Rate::create($data);
+        }
+
+        return response()->json([
+            'data' => [
+                'code'      => 200,
+                'message'   => "Attendance is given",
+                'student'   => UserResource::make($student),
+                'rate'      => RateResource::make($attendance),
+            ],
+        ])->setStatusCode(200);
+    }
+
     public function setRateStudent(RateRequest $request)
     {
         if (empty($request->student_id)) {
@@ -60,6 +121,7 @@ class RateController extends Controller
 
         if (! empty($rate)) {
             $rate->rate = $data['rate'];
+            $rate->save();
         } else {
             $rate = Rate::create($data);
         }
@@ -168,8 +230,14 @@ class RateController extends Controller
     /*
      * Get rates for a teacher
      */
-    public function getRatesForGroupBySubject(Request $request)
+    public function getRatesForGroupByLesson($id)
     {
-        $subject = $request->query('subject');
+        $users =Timetable::find($id)->group->students;
+
+        return response()->json([
+            'data' => [
+                'students' => UserCollection::make($users),
+            ],
+        ]);
     }
 }
