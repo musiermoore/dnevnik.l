@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Admin\UserUpdateRequest;
 use App\Http\Requests\Api\RoleRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -14,7 +17,9 @@ class UserController extends Controller
     {
         $user = $request->user();
 
-        return UserResource::make($user);
+        return response()->json([
+            'data' => UserResource::make($user),
+        ])->setStatusCode(200);
     }
 
     public function getUserById($id)
@@ -47,7 +52,7 @@ class UserController extends Controller
         $roles = $request->roles;
         $groupId = $request->group;
 
-        $users = User::getUsersByRole($roles, $groupId);
+        $users = User::getUsersByRole($roles, $groupId)->get();
 
         return response()->json([
             'data' => UserResource::collection($users)->sortBy('roles')->sortBy('group')->values(),
@@ -57,14 +62,26 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->get()
-            ->sortBy(function($user) {
-                return $user->roles;
-            });
+        if (! empty($request->query('roles'))) {
+            $users = User::getUsersByRole($request->query('roles'), $request->query('group'))->with('roles');
+        } else {
+            $users = User::with('roles');
+        }
+
+        if (! empty($request->query('field')) && ! empty($request->query('value'))) {
+            $result = Profile::where($request->query('field'), 'like', '%' . $request->query('value') . '%')->pluck('user_id');
+
+            $users = $users->whereIn('id', $result);
+        }
+
+        $users = $users->get()->sortBy(function($user) {
+            return $user->roles;
+        });
 
         return response()->json([
             'data' => UserResource::collection($users),
@@ -100,9 +117,29 @@ class UserController extends Controller
      * @param  \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, $id)
     {
-        //
+        $data = $request->input();
+
+        $user = User::find($id);
+
+        $user->update([
+            $data['login'],
+            $data['email'],
+        ]);
+
+        $user->roles()->detach();
+        $user->assignRole($data['roles']);
+
+        $user->profile()->update($data["profile"]);
+
+        return response()->json([
+            'data' => [
+                'user' => UserResource::make($user),
+            ]
+        ]);
+
+
     }
 
     /**
