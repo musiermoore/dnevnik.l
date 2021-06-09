@@ -40,9 +40,9 @@ class Profile extends Model
     public function getGenderAttribute($gender)
     {
         if ($gender == 0) {
-            $newGender = "Мужчина";
+            $newGender = "Мужской";
         } else {
-            $newGender = "Женщина";
+            $newGender = "Женский";
         }
 
         return $newGender;
