@@ -32,7 +32,7 @@ class RegisterRequest extends FormRequest
             'patronymic'    => 'required|string|max:64',
             'birthday'      => 'required|date',
             'gender'        => 'required|boolean',
-            'phone'         => 'required|regex:/(8)[0-9]{10}/|size:11   ',
+            'phone'         => 'required|regex:/(8)[0-9]{10}/|size:11',
             // user
             'login'         => 'required|string|max:32|unique:users',
             'email'         => 'required|string|max:32|unique:users|email',
