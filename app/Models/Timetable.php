@@ -51,6 +51,11 @@ class Timetable extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function rates()
+    {
+        return $this->hasMany(Rate::class, 'lesson_id');
+    }
+
     public function getDateAttribute($date)
     {
         $date = \Carbon\Carbon::createFromFormat('Y-m-d', $date);

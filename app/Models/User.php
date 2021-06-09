@@ -60,15 +60,21 @@ class User extends Authenticatable
         return $this->belongsToMany(Group::class, 'group_user', 'user_id');
     }
 
+    public function rates()
+    {
+        return $this->hasMany(Rate::class, 'student_id','id');
+    }
+
     public static function getUsersByRole($roles, $groupId = null)
     {
         $users = User::role($roles);
 
-        if (! empty($groupId) && $roles == 3) {
+        if (! empty($groupId) && $roles[0] == 3) {
+
             $users = self::getUsersByGroup($users, $groupId);
         }
 
-        return $users->get();
+        return $users;
     }
 
     private static function getUsersByGroup($users, $groupId)
