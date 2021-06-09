@@ -24,10 +24,13 @@ class Rate extends Model
         return $this->belongsTo(Group::class);
     }
 
+
+
     protected $fillable = [
         'id',
         'student_id',
         'lesson_id',
         'rate',
+        'attendance',
     ];
 }
