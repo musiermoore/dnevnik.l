@@ -13,7 +13,7 @@ class Group extends Model
 
     protected $fillable = [
         'name',
-        'curator',
+        'curator_id',
         'enrollment_date',
         'graduation_date',
         'duration_study'
