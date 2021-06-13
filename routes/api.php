@@ -42,12 +42,15 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/rates', [\App\Http\Controllers\Api\RateController::class, 'setRateStudent']);
         Route::post('/attendance', [\App\Http\Controllers\Api\RateController::class, 'setAttendanceStudent']);
         Route::get('/lesson/{id}/rates', [\App\Http\Controllers\Api\RateController::class, 'getRatesForGroupByLesson']);
+        // Group
+
 
         Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'getUsersByRole']);
         Route::get('/group', [\App\Http\Controllers\Api\GroupController::class, 'getStudentsByGroup']);
 
         Route::group(['prefix' => 'admin'], function () {
             Route::apiResource('/users', \App\Http\Controllers\Api\UserController::class);
+            Route::apiResource('groups', \App\Http\Controllers\Api\GroupController::class);
         });
     });
 });
